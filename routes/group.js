@@ -2,6 +2,7 @@ const express = require("express");
 const {
   createGroup,
   updateGroup,
+  joinGroup,
   deleteGroup,
   searchGroup,
 } = require("../controllers/groupController");
@@ -14,6 +15,7 @@ router.use(authMiddleware);
 
 router.post("/create", createGroup);
 router.put("/update/:groupId", updateGroup);
+router.put("/join/:uniqueCode", joinGroup);
 router.delete("/delete/:groupId", deleteGroup);
 router.get("/search/", searchGroup);
 
