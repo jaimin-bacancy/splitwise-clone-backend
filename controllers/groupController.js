@@ -21,6 +21,22 @@ exports.createGroup = async (req, res) => {
   }
 };
 
+exports.groupDetail = async (req, res) => {
+  const { groupId } = req.params;
+
+  try {
+    const group = await Group.findById(groupId).populate("users", "name");
+
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    res.status(200).json({ group: group });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.updateGroup = async (req, res) => {
   const { groupId } = req.params;
   const { name } = req.body;
@@ -73,6 +89,37 @@ exports.deleteGroup = async (req, res) => {
     await Group.findByIdAndDelete(groupId);
 
     res.status(200).json({ message: "Group deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.removeUserGroup = async (req, res) => {
+  const { groupId, userId } = req.params;
+  const { id } = req.user;
+
+  try {
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    if (group.createdBy != id) {
+      return res
+        .status(403)
+        .json({ message: "You are not allow for this operation." });
+    }
+
+    if (group.users.length > 1) {
+      const updatedUsers = group.users.filter((item) => item != userId);
+      group.users = updatedUsers;
+      await group.save();
+    } else {
+      await Group.findByIdAndDelete(groupId);
+    }
+
+    return res.status(200).json({ message: "User removed successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
