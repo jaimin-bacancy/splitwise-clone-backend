@@ -16,7 +16,7 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.post("/create", createGroup);
-router.get("/:groupId/detail", groupDetail);
+router.get("/detail/:groupId", groupDetail);
 router.put("/update/:groupId", updateGroup);
 router.put("/join/:uniqueCode", joinGroup);
 router.delete("/delete/:groupId", deleteGroup);
